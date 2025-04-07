@@ -1,12 +1,14 @@
 package service
 
 import (
+	"math/rand"
+	"testing"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/rBurgett/scmsh/internal/constants"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"math/rand"
-	"testing"
 )
 
 func TestGame_ExecuteMove(t *testing.T) {
@@ -248,6 +250,8 @@ func TestCreateGame(t *testing.T) {
 			require.NoError(t, err)
 			assert.NotEmpty(t, output.ID)
 			output.ID = uuid.Nil
+			assert.NotEmpty(t, output.CreatedAt)
+			output.CreatedAt = time.Time{}
 			assert.Equal(t, tt.expected, output)
 		})
 	}

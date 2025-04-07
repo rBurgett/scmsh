@@ -1,9 +1,15 @@
 package service
 
 import (
+	"strings"
+	"unicode/utf8"
+
 	"github.com/google/uuid"
 	"github.com/rBurgett/scmsh/internal/constants"
-	"strings"
+)
+
+const (
+	PlayerNameMaxLength = 20
 )
 
 type Player struct {
@@ -18,7 +24,7 @@ func (p *Player) Validate() error {
 	if p.ID == uuid.Nil {
 		return constants.ErrorPlayerInvalidID
 	}
-	if p.Name == "" {
+	if p.Name == "" || utf8.RuneCountInString(p.Name) > PlayerNameMaxLength {
 		return constants.ErrorPlayerInvalidName
 	}
 	if p.Secret == uuid.Nil {
@@ -67,7 +73,7 @@ func (p *Player) GetCard(position int) (constants.CardType, error) {
 
 func CreatePlayer(name string) (Player, error) {
 	name = strings.TrimSpace(name)
-	if name == "" {
+	if name == "" || utf8.RuneCountInString(name) > PlayerNameMaxLength {
 		return Player{}, constants.ErrorPlayerInvalidName
 	}
 
@@ -77,4 +83,8 @@ func CreatePlayer(name string) (Player, error) {
 		Secret: uuid.New(),
 		Status: constants.PlayerStatusUnaffiliated,
 	}, nil
+}
+
+func copyPlayer(p Player) Player {
+	return p
 }

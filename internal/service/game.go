@@ -1,9 +1,11 @@
 package service
 
 import (
+	"strings"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/rBurgett/scmsh/internal/constants"
-	"strings"
 )
 
 type Game struct {
@@ -13,6 +15,7 @@ type Game struct {
 	Owner         uuid.UUID
 	Players       []Player
 	Status        constants.GameStatus
+	CreatedAt     time.Time
 }
 
 func (g *Game) ExecuteMove(playerID uuid.UUID, playerCardPosition int, targetID uuid.UUID, targetCardPosition int) (Move, error) {
@@ -75,6 +78,10 @@ func (g *Game) GetPlayer(id uuid.UUID) (Player, error) {
 	return Player{}, constants.ErrorPlayerNotFound
 }
 
+func (g *Game) IsOwner(id uuid.UUID) bool {
+	return g.Owner == id
+}
+
 func CreateGame(owner Player) (Game, error) {
 	owner.Name = strings.TrimSpace(owner.Name)
 	if err := owner.Validate(); err != nil {
@@ -88,6 +95,7 @@ func CreateGame(owner Player) (Game, error) {
 		Owner:         owner.ID,
 		Players:       []Player{owner},
 		Status:        constants.GameStatusOpen,
+		CreatedAt:     time.Now().UTC(),
 	}, nil
 }
 
